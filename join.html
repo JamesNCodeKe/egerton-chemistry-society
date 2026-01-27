@@ -21,6 +21,7 @@
     <link rel="icon" href="./images/favicon.jpg" type="image/png">
     <title>Join Us | Egerton Chemistry Society</title>
     <link rel="stylesheet" href="./dist/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 
     <style>
         @font-face {
@@ -75,7 +76,7 @@
             @apply bg-white p-8 md:p-10 rounded-xl shadow-lg border border-slate-200;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
 
 </head>
 <body class="text-slate-800">
@@ -346,7 +347,9 @@
             });
         });
     </script>
-    <script src="certificate.js"></script>
+    <img id="cert-template" src="./images/template.png" alt="Certificate Template" style="display: none;">
+    <script src="jspdf.min.js"></script>
+    <script src="certificates.js"></script>
 
 </body>
 </html>

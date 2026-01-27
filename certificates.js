@@ -1,61 +1,103 @@
-document.getElementById("joinForm").addEventListener("submit", function (e) {
-  e.preventDefault(); // stop page reload
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("joinForm");
+    
+    // Make sure these match your HTML IDs exactly
+    const templateImg = document.getElementById("cert-template");
+    const logoLeft = document.getElementById("logo-left");
+    const logoRight = document.getElementById("logo-right");
 
-  const name = document.getElementById("full-name").value;
-  const regNo = document.getElementById("reg-number").value;
-  const email = document.getElementById("email").value;
-  const course = document.getElementById("course").value;
-  const year = document.getElementById("year-of-study").value;
+    if (!form || !templateImg) {
+        console.error("Error: Form or Template Image not found.");
+        return;
+    }
 
-  const date = new Date().toLocaleDateString();
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("landscape");
+        // 1. Wait for the sexy font
+        await document.fonts.load('10px "Great Vibes"');
 
-  // Border
-  doc.setLineWidth(1.5);
-  doc.rect(10, 10, 277, 190);
+        if (!window.jspdf) {
+            alert("Error: jsPDF library is missing.");
+            return;
+        }
 
-  // Title
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(24);
-  doc.text("EGERTON UNIVERSITY CHEMISTRY SOCIETY", 148, 40, { align: "center" });
+        try {
+            const canvas = document.createElement("canvas");
+            // Define 'w' and 'h' here so we can use them later
+            const w = templateImg.naturalWidth;
+            const h = templateImg.naturalHeight;
+            canvas.width = w;
+            canvas.height = h;
+            
+            const ctx = canvas.getContext("2d");
 
-  doc.setFontSize(18);
-  doc.text("MEMBERSHIP CERTIFICATE", 148, 60, { align: "center" });
+            // 2. Draw Template
+            ctx.drawImage(templateImg, 0, 0);
 
-  // Body
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(14);
-  doc.text("This is to certify that", 148, 85, { align: "center" });
+            // 3. Draw Logos (Optional)
+            const logoSize = w * 0.12;
+            const logoY = h * 0.05;
+            const logoMargin = w * 0.05;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.text(name.toUpperCase(), 148, 100, { align: "center" });
+            if (logoLeft) ctx.drawImage(logoLeft, logoMargin, logoY, logoSize, logoSize);
+            if (logoRight) ctx.drawImage(logoRight, w - logoSize - logoMargin, logoY, logoSize, logoSize);
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(14);
-  doc.text(`Registration Number: ${regNo}`, 148, 118, { align: "center" });
-  doc.text(`Course: ${course} (${year} Year)`, 148, 132, { align: "center" });
+            // 4. Common Settings
+            const centerX = w / 2;
+            ctx.textAlign = "center";
+            ctx.fillStyle = "#014421"; // Egerton Green
 
-  doc.text(
-    "is hereby recognized as a registered member of the",
-    148,
-    148,
-    { align: "center" }
-  );
+            // --- A. DRAW CLUB TITLE ---
+            const titleSize = w * 0.032; 
+            ctx.font = `bold ${titleSize}px Helvetica`; 
+            // Position: 8% down from top
+            ctx.fillText("EGERTON UNIVERSITY CHEMISTRY CLUB", centerX, h * 0.08);
 
-  doc.setFont("helvetica", "bold");
-  doc.text("Egerton University Chemistry Society (EUCCA)", 148, 160, {
-    align: "center",
-  });
 
-  // Footer
-  doc.setFontSize(12);
-  doc.text(`Issued on: ${date}`, 30, 180);
-  doc.text("Chairperson", 210, 175);
-  doc.text("Secretary General", 30, 175);
+            // --- B. DRAW STUDENT NAME ---
+            // 1. Get Input
+            let rawName = document.getElementById("full-name").value || "Jacktone Omollah";
+            
+            // 2. Capitalization Logic (Fixing the rawInput error)
+            let titleCaseName = rawName
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
 
-  // Download
-  doc.save(`${name}_EUCCA_Membership_Certificate.pdf`);
+            // 3. Spacing Logic (Using the Capitalized name now!)
+            const finalName = titleCaseName.trim().replace(/\s+/g, "    "); 
+            
+            // 4. Draw it
+            const nameSize = w * 0.085; 
+            ctx.font = `${nameSize}px 'Great Vibes'`;
+            
+            // Position: 55% down from top
+            ctx.fillText(finalName, centerX, h * 0.57);
+
+
+            // 5. Generate PDF
+            const imgData = canvas.toDataURL("image/png");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: "landscape",
+                unit: "mm",
+                format: "a4"
+            });
+
+            const pdfWidth = doc.internal.pageSize.getWidth();
+            const pdfHeight = doc.internal.pageSize.getHeight();
+
+            doc.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+            
+            // Use a clean filename
+            const safeName = titleCaseName.replace(/[^a-zA-Z0-9]/g, "_");
+            doc.save(`${safeName}_Certificate.pdf`);
+
+        } catch (error) {
+            console.error("Generation Failed:", error);
+            alert("Error generating PDF. Check console.");
+        }
+    });
 });
