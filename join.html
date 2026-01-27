@@ -75,6 +75,8 @@
             @apply bg-white p-8 md:p-10 rounded-xl shadow-lg border border-slate-200;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 <body class="text-slate-800">
 
@@ -195,7 +197,7 @@
       </p>
     </div>
 
-    <form action="#" method="POST"
+    <form id="joinForm" action="#" method="POST"
     class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 p-10 space-y-8 overflow-hidden">
 
     <div class="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-100 via-transparent to-blue-50 opacity-60 pointer-events-none z-0"></div>
@@ -344,5 +346,7 @@
             });
         });
     </script>
+    <script src="certificate.js"></script>
+
 </body>
 </html>
