@@ -4,7 +4,7 @@ This is the official website for the **Egerton Chemistry Society**, created to s
 
 ---
 
-## 🌍 Live Demo
+## 🌍 Live
 **Visit here:** [https://jamesncodeke.github.io/egerton-chemistry-society](https://jamesncodeke.github.io/egerton-chemistry-society)
 
 
